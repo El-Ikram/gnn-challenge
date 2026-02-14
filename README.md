@@ -2,11 +2,31 @@
 # 🧬 GNN Challenge: cfRNA → Placenta Inductive GNN for Maternal-Fetal Health Prediction
 
 <div align="center">
-    <img src="images/IMG1.png" width='500' /> 
+    <img src="images/IMG3.png" width='500' /> 
 </div>
 
 <br>
 <br>
+
+
+  <!-- <p>
+    <a href="https://ineqmath.github.io/">🌐 Project</a> |
+    <a href="https://arxiv.org/abs/2506.07927"><img src="assets/arxiv.svg" alt="arXiv" style="height:1em; vertical-align:middle;"/> arXiv</a> |
+    <a href="https://huggingface.co/papers/2506.07927"><img src="assets/huggingface.png" alt="hf" style="height:1em; vertical-align:middle;"/> HF Paper</a> |
+    <a href="https://huggingface.co/datasets/AI4Math/IneqMath"><img src="assets/huggingface.png" alt="hf" style="height:1em; vertical-align:middle;"/> Dataset</a> |
+    <a href="https://huggingface.co/spaces/AI4Math/IneqMath-Leaderboard">🏆 Leaderboard</a> |
+    <a href="https://ineqmath.github.io/#visualization">🔮 Visualization</a>
+    
+  </p> -->
+  <!--- BADGES: START --->
+[![GitHub license](https://img.shields.io/badge/License-MIT-green.svg?logo=github)](https://lbesson.mit-license.org/)
+[![GitHub license](https://img.shields.io/badge/License-CC--BY--SA--4.0-green.svg?logo=github)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![Leaderboard](https://img.shields.io/badge/Leaderboard-IneqMath-FFD21E?logo=Hoppscotch)](https://mubarraqqq.github.io/gnn-challenge/leaderboard.html)
+
+<!--- BADGES: END --->
+
+</div>
+
 
 ### Scientific Focus
 - Inductive graph learning across **cfRNA** and **placental transcriptomics** to detect maternal-fetal health issues.  
