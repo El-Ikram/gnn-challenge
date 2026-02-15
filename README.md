@@ -21,7 +21,7 @@ Participant code is run outside this repository. Submissions are scored in CI ag
 - Inductive graph learning across cfRNA and placental transcriptomics to detect maternal-fetal health issues.
 - Learn transferable representations that generalize to unseen samples and domains rather than treating each dataset independently.
 
-## Alignment with BASIRA Lab's Mission
+## Alignment with [BASIRA Lab's](https://basira-lab.com) Mission
 
 - Prioritizes robust generalization across heterogeneous datasets.
 - Uses compute-efficient, non-data-hungry graph learning methods that can run on standard hardware.
@@ -29,7 +29,7 @@ Participant code is run outside this repository. Submissions are scored in CI ag
 ## Inspiration from GNN Literature
 
 - Draws from studies on inductive learning, message passing, and representation transfer.
-- Model design follows DGL Lectures 1.1-4.6, covering:
+- Model design follows [DGL Lectures 1.1-4.6](https://www.youtube.com/watch?v=gQRV_jUyaDw&list=PLug43ldmRSo14Y_vt7S6vanPGh-JpHR7T), covering:
   - Graph construction from tabular data
   - Node feature encoding
   - Neighborhood aggregation (GraphSAGE-style inductive updates)
@@ -88,6 +88,7 @@ Interpretation:
 
 - `A[i, j] = 1` indicates an edge between nodes `i` and `j`, else `0`
 - `X` is node-by-feature and includes harmonized expression features and released covariates
+- Node alignment is by `node_id`; use `data/public/test_nodes.csv` (and node files) as the ordering reference so rows in `X` correspond to the same nodes indexed in `A`.
 
 ### 🌍 Dataset Difficulty and Realism
 
