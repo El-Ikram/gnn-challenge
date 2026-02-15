@@ -1,4 +1,4 @@
-# GNN Challenge: cfRNA -> Placenta Inductive Prediction
+# 🧬 GNN Challenge: cfRNA → Placenta Inductive GNN for Maternal-Fetal Health Prediction
 
 <div align="center">
     <img src="images/IMG3.png" width='500' /> 
@@ -42,6 +42,13 @@ Participant code is run outside this repository. Submissions are scored in CI ag
 - Primary metric: F1 Score
 - Additional metrics: Accuracy, Precision, Recall
 - Public leaderboard: Auto-updated after merged submissions
+
+<div align="center">
+    <img src="images/IMG4.png" width='500' /> 
+</div>
+
+<br>
+<br>
 
 ## Dataset Source and Description
 
