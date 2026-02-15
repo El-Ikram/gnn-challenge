@@ -1,7 +1,7 @@
-# GLIMPS-GNN
+# 🧬 GLIMPS-GNN
 **Graph-based Liquid-biopsy Inductive Modeling for PreeclampSia**
 
-## 🧬 GNN Challenge: cfRNA → Placenta Inductive Prediction
+## GNN Challenge: cfRNA → Placenta Inductive Prediction
 
 <div align="center">
     <img src="images/IMG3.png" width='500' /> 
