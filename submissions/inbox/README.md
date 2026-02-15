@@ -1,16 +1,14 @@
 # Submissions Inbox
 
-Each submission must be placed in:
-```
+Store submission files in:
+
+```text
 submissions/inbox/<team>/<run_id>/
 ```
 
-Required files:
-- `predictions.csv` (columns: `id`, `y_pred`)
+Required files per submission:
+
+- `predictions.csv` (`id`, `y_pred`)
 - `metadata.json`
 
-Example:
-```
-submissions/inbox/my_team/run_001/predictions.csv
-submissions/inbox/my_team/run_001/metadata.json
-```
+Use root `CONTRIBUTING.md` as the canonical submission guide.

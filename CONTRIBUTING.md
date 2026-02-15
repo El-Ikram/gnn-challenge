@@ -1,72 +1,90 @@
-# Contributing Submissions to GNN Challenge
+# Contributing Submissions
 
-This [repository](https://github.com/Mubarraqqq/gnn-challenge) accepts **prediction files only**. No participant code is executed.
+This repository accepts prediction artifacts only.
+Participant training code is not executed here.
 
-## Quick Start (External Participants)
 
-1) **Fork** the repo on GitHub.  
-2) **Clone** your fork:
-```bash
-git clone https://github.com/<their-username>/gnn-challenge.git
-cd gnn-challenge
+## Policy
+
+- One submission attempt per participant is allowed.
+- Enforcement is automatic in CI.
+
+## Quick Start
+
+1. Fork the repository.
+2. Clone your fork.
+3. Create a branch.
+4. Train your model externally using `data/public/` files.
+5. Create submission files under `submissions/inbox/<team>/<run_id>/`.
+6. Open a pull request to `main`.
+
+## Required Submission Files
+
+Folder layout:
+
+```text
+submissions/inbox/<team>/<run_id>/
 ```
-3) **Create a branch**:
-```bash
-git checkout -b new_submission
+
+Files:
+
+- `predictions.csv` with columns: `id`, `y_pred`
+- `metadata.json`
+
+Example:
+
+```text
+submissions/inbox/my_team/run_001/predictions.csv
+submissions/inbox/my_team/run_001/metadata.json
 ```
 
+Example metadata:
 
----
-## Minimal ML Baseline (Quick Start) for Graph Based models
+```json
+{
+  "team": "my_team",
+  "run_id": "run_001",
+  "model_name": "My GNN v1",
+  "model_type": "human"
+}
+```
 
-If you just want a working baseline, here’s a tiny logistic‑regression example:
+## Working With Graph Data (`A` and `X`) in Your Codebase
+
+Use:
+
+- `data/public/adjacency_matrix.csv` as adjacency matrix `A`
+- `data/public/train.csv` and `data/public/test.csv` as feature source for `X`
+- `data/public/test_nodes.csv` as ID reference for predictions
+
+Minimal PyG-style conversion:
 
 ```python
-
+import numpy as np
+import pandas as pd
 import torch
-import torch.nn.functional as F
-from torch_geometric.nn import SAGEConv
-from torch_geometric.nn import to_hetero
 
-# load artifact
-artifact = torch.load("data/public/graph_artifacts.pt")
-train_graph = artifact["train_graph"]
-test_graph = artifact["test_graph"]
+A = pd.read_csv("data/public/adjacency_matrix.csv", index_col=0).values
+train = pd.read_csv("data/public/train.csv")
+test = pd.read_csv("data/public/test.csv")
 
-# simple GraphSAGE backbone
-class SAGE(torch.nn.Module):
-    def __init__(self, in_dim, hidden_dim, out_dim):
-        super().__init__()
-        self.conv1 = SAGEConv(in_dim, hidden_dim)
-        self.conv2 = SAGEConv(hidden_dim, out_dim)
+feat_cols = [c for c in train.columns if c not in ["node_id", "sample_id", "disease_labels"]]
+all_nodes = pd.concat([train[["node_id"] + feat_cols], test[["node_id"] + feat_cols]], ignore_index=True)
+all_nodes = all_nodes.drop_duplicates(subset=["node_id"], keep="last")
 
-    def forward(self, x, edge_index):
-        x = F.relu(self.conv1(x, edge_index))
-        return self.conv2(x, edge_index)
-
-# build hetero model
-in_dim = train_graph["node"].x.size(1)
-model = to_hetero(SAGE(in_dim, 64, 2), train_graph.metadata(), aggr="mean")
-
-# train step example
-out = model(train_graph.x_dict, train_graph.edge_index_dict)["node"]
-y = train_graph["node"].y
-train_mask = y >= 0  # only labeled train nodes
-loss = F.cross_entropy(out[train_mask], y[train_mask])
-loss.backward()
-
-
+X = torch.tensor(all_nodes[feat_cols].values, dtype=torch.float32)
+src, dst = np.where(A > 0)
+edge_index = torch.tensor(np.vstack([src, dst]), dtype=torch.long)
 ```
 
----
+Important:
 
----
-## Minimal ML Baseline (Quick Start) for tabular Based models
+- Keep node ordering consistent between `A`, `X`, and node IDs.
+- `predictions.csv` IDs must match `data/public/test_nodes.csv`.
 
-If you just want a working baseline, here’s a tiny logistic‑regression example:
+## Minimal Tabular Baseline
 
 ```python
-
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
@@ -82,80 +100,21 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 X_test_scaled = scaler.transform(X_test)
 
-model = LogisticRegression(max_iter=1000)
-model.fit(X_scaled, y)
+clf = LogisticRegression(max_iter=1000)
+clf.fit(X_scaled, y)
 
-proba = model.predict_proba(X_test_scaled)[:, 1]
-preds = pd.DataFrame({"id": test["node_id"], "y_pred": proba})
-preds.to_csv("predictions.csv", index=False)
-
+proba = clf.predict_proba(X_test_scaled)[:, 1]
+pd.DataFrame({"id": test["node_id"], "y_pred": proba}).to_csv("predictions.csv", index=False)
 ```
 
----
+## Validation Rules
 
-4) **Train your model** using `data/public/train.csv` and generate predictions for `data/public/test.csv`.
-   - Create `predictions.csv` with columns: `id`, `y_pred`.
-   - IDs **must** match `data/public/test_nodes.csv`.
+- `predictions.csv` must include `id` and `y_pred`.
+- `y_pred` may be probability (`0-1`) or hard label (`0/1`).
+- Row IDs must match `data/public/test_nodes.csv`.
 
-5) **Create submission folder**:
-```
-submissions/inbox/<team>/<run_id>/predictions.csv
-submissions/inbox/<team>/<run_id>/metadata.json
-```
+## Evaluation and Leaderboard
 
-Example `metadata.json`:
-```json
-{
-  "team": "my_team",
-  "run_id": "run_001",
-  "model_name": "My GNN v1",
-  "model_type": "human"
-}
-```
-
-6) **Commit + push**:
-```bash
-git add submissions/inbox/<team>/<run_id>/predictions.csv
-git add submissions/inbox/<team>/<run_id>/metadata.json
-git commit -m "Add submission: My GNN v1"
-git push origin new_submission
-```
-
-7) **Open a PR** to the main repo. CI validates + scores. On merge, the leaderboard updates.
-
----
-
-## Submission Format
-
-Required:
-- `predictions.csv` with columns `id`, `y_pred`
-- `metadata.json`
-
-Notes:
-- `y_pred` can be probability (0–1) or hard label (0/1)
-- IDs must match `data/public/test_nodes.csv`
-
-
-## Leaderboard
-
-Your submission can be viewed [here](https://mubarraqqq.github.io/gnn-challenge/leaderboard.html) after PR has been merged by the [organizer](www.github.com/mubarraqqq)
-
----
-
-## Evaluation Metrics
-
-Primary metric: **Macro F1**  
-Also reported: Accuracy, Precision, Recall.
-
----
-
-## FAQ
-
-**Do I need to run any code in this repo?**  
-No. You only submit prediction files.
-
-**Who merges PRs?**  
-Maintainers. The leaderboard updates after merge.
-
-**Can I submit multiple runs?**  
-No. Only one submission attempt per participant is allowed and enforced in CI.
+- Primary metric: Macro F1
+- Also reported: Accuracy, Precision, Recall
+- Public leaderboard: `https://mubarraqqq.github.io/gnn-challenge/leaderboard.html`
