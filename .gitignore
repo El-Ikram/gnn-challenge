@@ -7,3 +7,5 @@ venv311/
 
 testing/
 tvenv
+
+no_commit.py
